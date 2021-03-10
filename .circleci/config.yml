@@ -19,15 +19,9 @@ image_config: &image_config
 
   NODE_VERSION_NUM: 12.21.0
 
-  PYTHON_VERSION_NUM: # pick a version from https://python.org/ftp/python
-
-  JAVA: # Java options: true, false
-
-  MYSQL_CLIENT: # MySQL options: true, false
-
   POSTGRES_CLIENT: 9.5
 
-  DOCKERIZE: # Dockerize options: true, false
+  DOCKERIZE: true # Dockerize options: true, false
 
   BROWSERS: true # browser tools (Xvfb, PhantomJS, Firefox, Chrome, Chromedriver): true, false
 
