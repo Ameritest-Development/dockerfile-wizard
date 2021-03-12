@@ -41,24 +41,24 @@ jobs:
     steps:
       - checkout
 
-        - run:
-            name: Install dependencies for Webpacker
-            command: |
-              curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.2/install.sh | bash
-              export NVM_DIR="$HOME/.nvm"
-              [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-              [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-              command -v nvm
-              nvm install lts/erbium
-              node --version
-              apt update
-              apt install apt-utils -y
-              apt install libuv1:amd64 -y
-              apt install apt-transport-https -y
-              curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
-              echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
-              apt update
-              apt install --no-install-recommends yarn -y
+      - run:
+          name: Install dependencies for Webpacker
+          command: |
+            curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.2/install.sh | bash
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+            [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+            command -v nvm
+            nvm install lts/erbium
+            node --version
+            apt update
+            apt install apt-utils -y
+            apt install libuv1:amd64 -y
+            apt install apt-transport-https -y
+            curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+            echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
+            apt update
+            apt install --no-install-recommends yarn -y
 
 ##      - run: bash scripts/generate.sh > Dockerfile
 
