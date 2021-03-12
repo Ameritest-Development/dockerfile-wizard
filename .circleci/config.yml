@@ -4,7 +4,7 @@ image_config: &image_config
   # either as project-specific environment variables
   # or as resources in your organization's org-global Context
 
-  IMAGE_NAME: skinny-jeans-ubuntu-xenial
+  IMAGE_NAME: xenial-node-ruby-2.5.1
 
   IMAGE_TAG: skinny-jeans
 
@@ -19,11 +19,17 @@ image_config: &image_config
 
   NODE_VERSION_NUM: 12.21.0
 
-  POSTGRES_CLIENT: 9.5
+  # PYTHON_VERSION_NUM: # pick a version from https://python.org/ftp/python
 
-  DOCKERIZE: true # Dockerize options: true, false
+  JAVA: false
 
-  BROWSERS: true # browser tools (Xvfb, PhantomJS, Firefox, Chrome, Chromedriver): true, false
+  MYSQL_CLIENT: false
+
+  POSTGRES_CLIENT: true
+
+  DOCKERIZE: false
+
+  BROWSERS: true
 
 version: 2
 jobs:
@@ -35,72 +41,72 @@ jobs:
     steps:
       - checkout
 
-      - run: bash scripts/generate.sh > Dockerfile
+        - run:
+            name: Install dependencies for Webpacker
+            command: |
+              curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.2/install.sh | bash
+              export NVM_DIR="$HOME/.nvm"
+              [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+              [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+              command -v nvm
+              nvm install lts/erbium
+              node --version
+              apt update
+              apt install apt-utils -y
+              apt install libuv1:amd64 -y
+              apt install apt-transport-https -y
+              curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+              echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
+              apt update
+              apt install --no-install-recommends yarn -y
 
-      - run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+##      - run: bash scripts/generate.sh > Dockerfile
 
-      - run: docker build -t $DOCKER_USERNAME/$IMAGE_NAME:$IMAGE_TAG .
+##      - run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
 
-      - run: docker push $DOCKER_USERNAME/$IMAGE_NAME:$IMAGE_TAG && sleep 10
+##      - run: docker build -t $DOCKER_USERNAME/$IMAGE_NAME:$IMAGE_TAG .
 
-      - store_artifacts:
-          path: Dockerfile
+##      - run: docker push $DOCKER_USERNAME/$IMAGE_NAME:$IMAGE_TAG && sleep 10
 
-  test_image:
-    docker:
-      - image: $DOCKER_USERNAME/skinny-jeans-ubuntu-xenial:skinny-jeans
-        environment:
-          <<: *image_config
+##      - store_artifacts:
+##          path: Dockerfile
 
-    steps:
-      - checkout
+##  test_image:
+##    docker:
+##      - image: $DOCKER_USERNAME/xenial-node-ruby-2.5.1:skinny-jeans
+##        environment:
+##          <<: *image_config
 
-      - run:
-          name: Install dependencies for Webpacker
-          command: |
-            curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.2/install.sh | bash
-            export NVM_DIR="$HOME/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-            [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-            command -v nvm
-            nvm install lts/erbium
-            node --version
-            apt update
-            apt install apt-utils -y
-            apt install libuv1:amd64 -y
-            apt install apt-transport-https -y
-            curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
-            echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
-            apt update
-            apt install --no-install-recommends yarn -y
+##    steps:
+##      - checkout
 
-      - run:
-          name: start Xvfb for phantomjs test
-          command: Xvfb :99
-          background: true
+##      - run:
+##          name: start Xvfb for phantomjs test
+##          command: Xvfb :99
+##          background: true
 
-      - run:
-          name: bats tests
-          command: |
-            mkdir -p test_results/bats
-            bats scripts/tests.bats | \
-            perl scripts/tap-to-junit.sh > \
-            test_results/bats/results.xml
+##      - run:
+##          name: bats tests
+##          command: |
+##            mkdir -p test_results/bats
+##            bats scripts/tests.bats | \
+##            perl scripts/tap-to-junit.sh > \
+##            test_results/bats/results.xml
 
-      - store_test_results:
-          path: test_results
+##      - store_test_results:
+##          path: test_results
 
-      - store_artifacts:
-          path: test_results
+##      - store_artifacts:
+##          path: test_results
 
-workflows:
-  version: 2
-  dockerfile_wizard:
-    jobs:
-      - build:
-          context: org-global
+##workflows:
+##  version: 2
+##  dockerfile_wizard:
+##    jobs:
+##      - build:
+##          context: org-global
 
-      - test_image:
-          context: org-global
-          requires:
-            - build
+##      - test_image:
+##          context: org-global
+##          requires:
+##            - build
