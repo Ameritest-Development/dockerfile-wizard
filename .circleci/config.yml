@@ -41,19 +41,6 @@ jobs:
     steps:
       - checkout
 
-      - run:
-          name: Install dependencies for Webpacker
-          command: |
-            node --version
-            apt update
-            apt install apt-utils -y
-            apt install libuv1:amd64 -y
-            apt install apt-transport-https -y
-            curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
-            echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
-            apt update
-            apt install --no-install-recommends yarn -y
-
 ##      - run: bash scripts/generate.sh > Dockerfile
 
 ##      - run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
